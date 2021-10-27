@@ -1,6 +1,6 @@
 # Keyphrase Extraction
 
-This repository contains the codes for the keyphrase extraction (KPE) task for patient documents.
+This repository contains the codes for the keyphrase extraction (KPE) task for patent documents.
 
 ## Installation
 
