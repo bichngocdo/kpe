@@ -95,7 +95,7 @@ image
 docker run -v /absolute/path/data/in/your/machine:/data -it kpe
 ```
 
-Step 3: Keyphrase extraction The prompt will ask for the name of the file you want to extract from:
+Step 3: Keyphrase extraction. The prompt will ask for the name of the file you want to extract from:
 
 ```shell
 Input file:
