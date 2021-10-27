@@ -48,22 +48,24 @@ for this problem is to extract keyphrases based on TF-IDF scores.
 First, we need to compute the document frequency in our data. Run:
 
 ```shell
-python compute_document_frequency.py --input data --output tfidf -n 5
+python compute_document_frequency.py --input data --output tfidf -n 3 --stopwords  --tags abstract
 ```
 
-to extract term up to 5-gram from the input folder ``data`` and save the computed document frequency to the output
-folder ``tfidf``. The script use all 3 text fields to compute the document frequency.
+to extract term up to 3-gram from the input folder ``data`` and save the computed document frequency to the output
+folder ``tfidf``. The script can be configured with option ``--tags`` to use all 3 text fields to compute the document
+frequency.
 ``data`` is a folder containing compressed files ``.tgz``, each file contains patents in ``.xml`` format. The document
 frequency of *each language* is saved in a separate file in the output folder ``tfidf``.
 
 After that, keyphrase extraction is performed by running:
 
 ```shell
-python extract_keyphrases.py --input data --model tfidf --output results.csv -n 3 -k 30 --redundancy_removal True
+python extract_keyphrases.py --input data --model tfidf --output results.csv -n 3 -k 30 --stopwords --tags abstract --redundancy_removal True
 ```
 
-The command extracts top 30 keyphrases up to 3-gram and save the output to ``results.csv``. In the same manner, all 3
-text fields are used to compute the term frequency, but keyphrases are only extracted from the abstract.
+The command extracts top 30 keyphrases up to 3-gram and save the output to ``results.csv``. In the same manner, the
+script can be configured with option ``--tags`` to use all 3 text fields to compute the term frequency, but keyphrases
+are only extracted from the abstract.
 
 Run each script with option ``-h`` to learn more about its parameters.
 
@@ -134,6 +136,7 @@ with option ``--languages``, for example ``--languages de fr``.
 - Supervised methods are generally superior to unsupervised methods. Using a combination of labeled and synthetic (from
   unsupervised approach) data in a semi-supervised self-training approach is shown to improve *keyphrase generation*
   over models trained with only labeled data ([Ye and Wang, 2018](https://aclanthology.org/D18-1447/)).
+- Parallel or distributed computing (e.g. MapReduce) can reduce the running time.
 
 ## Implementation
 
@@ -164,8 +167,8 @@ Parameters:
 Step 1: Compute document frequency
 
 As a statistical-based KPE method, TF-IDF relies on statistics of data, *document frequency*. An example of how to
-compute document frequency can be seen in [example_compute_df.py](example_compute_df.py). As a good practice, document
-frequency should be computed *less strict* than when using it. For example:
+compute document frequency can be seen in [example_compute_df.py](example_compute_df.py). Document frequency can be
+computed *less strict* than when using it. For example:
 
 - The maximum size of *n*-grams, ``n`` can be set to ``5`` for document frequency computation, and ``3`` for KPE.
 - Filtering *n*-gram by stopword can be disabled for document frequency computation (``stopwords=False``) and enabled

@@ -31,13 +31,13 @@ def parse_xml_file(f, name: str = None) -> Dict:
     if node is not None:
         output = parse_text_node(node)
         result['abstract'] = output['text']
-        result['lang_abs'] = output['language']
+        result['lang_abstract'] = output['language']
 
     node = root.find('description')
     if node is not None:
         output = parse_text_node(node)
         result['description'] = output['text']
-        result['lang_desc'] = output['language']
+        result['lang_description'] = output['language']
 
     node = root.find('claims')
     if node is not None:

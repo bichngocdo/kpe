@@ -16,17 +16,16 @@ def compute_df_xml_folder(
         n: int = 5,
         stopwords: bool = False,
         allowed_languages: List[str] = None,
+        tags: List[str] = None,
 ):
     df_models = {}
 
     def compute_df_xml_file(f, name: str = None):
         content = parse_xml_file(f)
         content = defaultdict(lambda: None, content)
-        contents = [
-            (content['lang_abs'], content['abstract']),
-            (content['lang_desc'], content['description']),
-            (content['lang_claims'], content['claims'])
-        ]
+        contents = []
+        for tag in tags:
+            contents.append((content['lang_{}'.format(tag)], content[tag]))
         for lang, text in contents:
             if lang is not None and text is not None:
                 if allowed_languages and lang not in allowed_languages:
@@ -70,6 +69,8 @@ if __name__ == '__main__':
                         help='use stopwords to filter candidates')
     parser.add_argument('--languages', type=str, required=False, nargs='+',
                         help='only compute document frequency on documents in these languages')
+    parser.add_argument('--tags', type=str, required=False, default=['abstract', 'description', 'claims'], nargs='+',
+                        help='only compute document frequency from these fields')
 
     args = parser.parse_args()
     print(args)
@@ -80,4 +81,5 @@ if __name__ == '__main__':
         n=args.size,
         stopwords=args.stopwords,
         allowed_languages=args.languages,
+        tags=args.tags,
     )

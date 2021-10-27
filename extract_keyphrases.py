@@ -23,6 +23,7 @@ def extract_kp_xml_folder(
         k: int = 30,
         stopwords: bool = False,
         allowed_languages: List[str] = None,
+        tags: List[str] = None,
         redundancy_removal: bool = False,
 ):
     tfidf_models = {}
@@ -31,10 +32,10 @@ def extract_kp_xml_folder(
         content = parse_xml_file(f)
         content = defaultdict(lambda: None, content)
 
-        lang = content['lang_abs']
+        lang = content['lang_abstract']
         # fall back: using the description for KPE if there is no abstract
         if lang is None:
-            lang = content['lang_desc']
+            lang = content['lang_description']
 
         text = content['abstract']
         # fall back: using the description for KPE if there is no abstract
@@ -58,20 +59,17 @@ def extract_kp_xml_folder(
                     stopwords=stopwords, normalization='stemming'
                 )
                 tqdm.write('Load KPE model for language: {}'.format(lang))
-            all_text = []
-            all_text.extend(text)
-            if content['lang_desc'] == lang and content['description'] is not None:
-                all_text.extend(content['description'])
-            if content['lang_claims'] == lang and content['claims'] is not None:
-                all_text.extend(content['claims'])
 
-            # Use all fields to compute term frequency
             model = tfidf_models[lang]
-            document = model.read_text(all_text)
-            all_candidates = model.extract_candidates(document)
-            scores = model.score_candidates(all_candidates)
 
-            # Extract candidates from abstract
+            all_text = []
+            if 'abstract' not in tags:
+                all_text.extend(text)
+            for tag in tags:
+                if content['lang_{}'.format(tag)] == lang and content[tag] is not None:
+                    all_text.extend(content[tag])
+            document = model.read_text(all_text)
+
             if text == []:  # fall back: using first 100 tokens of the description as abstract
                 description = model.read_text(content['description'])
                 limit = 100
@@ -84,9 +82,17 @@ def extract_kp_xml_folder(
                 abstract = Document()
                 abstract.sentences = sentences
                 abstract.language = description.language
+
+                if 'description' not in tags:  # description is originally not in the list of considered tags
+                    document.sentences.extend(abstract.sentences)
             else:
                 abstract = model.read_text(text)
 
+            # Use all fields to compute term frequency
+            all_candidates = model.extract_candidates(document)
+            scores = model.score_candidates(all_candidates)
+
+            # Extract candidates from abstract
             candidates = model.extract_candidates(abstract)
             keyphrases = model.extract_keyphrases(candidates, scores, k=k, redundancy_removal=redundancy_removal)
 
@@ -124,6 +130,8 @@ if __name__ == '__main__':
                         help='use stopwords to filter candidates')
     parser.add_argument('--languages', type=str, required=False, nargs='+',
                         help='only extract keyphrases on documents in these languages')
+    parser.add_argument('--tags', type=str, required=False, default=['abstract', 'description', 'claims'], nargs='+',
+                        help='only compute document frequency from these fields')
     parser.add_argument('--redundancy_removal', type=bool, default=False,
                         help='remove redundant keyphrases (slow)')
 
@@ -138,5 +146,6 @@ if __name__ == '__main__':
         k=args.top,
         stopwords=args.stopwords,
         allowed_languages=args.languages,
+        tags=args.tags,
         redundancy_removal=args.redundancy_removal,
     )
