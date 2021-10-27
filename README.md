@@ -2,6 +2,15 @@
 
 This repository contains the codes for the keyphrase extraction (KPE) task for patent documents.
 
+## Table of Content
+
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Package Structure](#package-structure)
+- [Challenge: Key Concept Extraction for Patent Documents](#challenge-key-concept-extraction-for-patent-documents)
+- [Implementation](#implementation)
+- [Usage](#usage)
+
 ## Installation
 
 The project was tested with Python 3.8.
@@ -148,6 +157,8 @@ docker run -i kpe-textrank < patent_file.xml
 - [retrieve_keyphrases.py](retrieve_keyphrases.py)
 - [cli.py](cli.py)
 - [run_textrank.py](run_textrank.py)
+- Document frequency is in folder [tfidf](tfidf).
+- Results of the TF-IDF model are in file [results_tfidf.csv](results_tfidf.csv).
 
 ### Note on language support
 

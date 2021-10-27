@@ -2,7 +2,7 @@ import ast
 
 import pandas as pd
 
-RESULT_FILE = 'results.csv'
+RESULT_FILE = 'results_tfidf.csv'
 
 
 def read_results(path: str):
