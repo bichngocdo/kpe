@@ -113,7 +113,7 @@ def extract_kp_xml_folder(
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        prog='extract_keyphrases.py',
+        prog='run_tfidf.py',
         description='Extract keyphrases from patient documents'
     )
     parser.add_argument('--input', type=str, required=True,

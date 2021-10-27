@@ -2,14 +2,15 @@ import logging
 from typing import Union, List, Tuple
 
 import spacy
-from nltk import SnowballStemmer, PorterStemmer
+from nltk import SnowballStemmer
 
 from .base_structures import Document, Sentence, Candidate
 from .filters import AbstractCandidateFilter
 
 __all__ = [
     'default_stemmer', 'default_spacy_model',
-    'process_text', 'generate_candidates', 'filter_candidates'
+    'process_text', 'generate_candidates', 'filter_candidates',
+    'remove_redundant_keyphrases',
 ]
 
 logger = logging.getLogger(__name__)

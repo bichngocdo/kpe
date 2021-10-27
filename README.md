@@ -22,7 +22,8 @@ python -m spacy download de
 ## Quick Start
 
 - See [example_compute_df.py](example_compute_df.py) for how to extract document frequency statistics.
-- See [example_extract_kp.py](example_extract_kp.py) for how to run an TF-IDF Keyphrase Extractor.
+- See [example_tfidf.py](example_tfidf.py) for how to run an TF-IDF Keyphrase Extractor.
+- See [example_textrank.py](example_textrank.py) for how to run a TextRank Keyphrase Extractor.
 
 ## Package Structure
 
@@ -40,7 +41,7 @@ the same. If a patient has no abstract, use the *first 100 words* of the descrip
 The goal of this task is to enrich patent documents by extracting **30** key concepts (or keyphrases) from the abstract
 so that users can later quickly review documents by looking only at the keyphrases.
 
-### Solution
+### Solution: TF-IDF
 
 This task belongs to the *unsupervised keyphrase extraction* (KPE) problem. One of the simplest but effective approach
 for this problem is to extract keyphrases based on TF-IDF scores.
@@ -55,12 +56,18 @@ to extract term up to 3-gram from the input folder ``data`` and save the compute
 folder ``tfidf``. The script can be configured with option ``--tags`` to use all 3 text fields to compute the document
 frequency.
 ``data`` is a folder containing compressed files ``.tgz``, each file contains patents in ``.xml`` format. The document
-frequency of *each language* is saved in a separate file in the output folder ``tfidf``.
+frequency of *each language* is saved in a separate file in the output folder ``tfidf``. In practice, since there are
+more data in English than in German, the document frequency is computed using these commands:
+
+```shell
+python compute_document_frequency.py --input data --output tfidf -n 3 --stopwords  --languages en --tags abstract
+python compute_document_frequency.py --input data --output tfidf -n 3 --stopwords  --languages de
+```
 
 After that, keyphrase extraction is performed by running:
 
 ```shell
-python extract_keyphrases.py --input data --model tfidf --output results.csv -n 3 -k 30 --stopwords --tags abstract --redundancy_removal True
+python run_tfidf.py --input data --model tfidf --output results.csv -n 3 -k 30 --stopwords --tags abstract --redundancy_removal True
 ```
 
 The command extracts top 30 keyphrases up to 3-gram and save the output to ``results.csv``. In the same manner, the
@@ -80,21 +87,33 @@ keyphrases('AU6027B1.xml')
 
 to see the extracted keyphrases of a particular document.
 
-### Docker
+### Solution: TextRank
+
+TextRank is another unsupervised KPE method based on graphs. Unlike TF-IDF, it does not rely on pre-computed statistics.
+
+TextRank can be run in a very simple way:
+
+```shell
+python run_textrank.py < patent_file.xml
+```
+
+The parameters can be seen and adjusted in the script.
+
+### Docker: TF-IDF
 
 Requirements: Docker is installed and the Docker server is running.
 
 Step 1: Build the Docker image
 
 ```shell
-docker build --tag kpe .
+docker build --tag kpe-tfidf -f docker/tfidf/Dockerfile .
 ```
 
 Step 2: Mount the local folder containing ``.xml`` documents to ``/data`` in the docker container and start the docker
 image
 
 ```shell
-docker run -v /absolute/path/data/in/your/machine:/data -it kpe
+docker run -v /absolute/path/data/in/your/machine:/data -it kpe-tfidf
 ```
 
 Step 3: Keyphrase extraction. The prompt will ask for the name of the file you want to extract from:
@@ -105,13 +124,29 @@ Input file:
 
 Type a name (e.g. ``AT508B.xml``), press Enter. The program will display a list of ranked keyphrases.
 
+### Docker: TextRank
+
+Requirements: Docker is installed and the Docker server is running.
+
+Step 1: Build the Docker image
+
+```shell
+docker build --tag kpe-textrank -f docker/textrank/Dockerfile .
+```
+
+Step 2: Keyphrase extraction
+
+```shell
+docker run -i kpe-textrank < patent_file.xml
+```
+
 ### Delivery
 
 - Package [``kpe``](kpe): see [kpe/README.md](kpe/README.md) for the package information
 - [compute_document_frequency.py](compute_document_frequency.py)
-- [extract_keyphrases.py](extract_keyphrases.py)
 - [retrieve_keyphrases.py](retrieve_keyphrases.py)
 - [cli.py](cli.py)
+- [run_textrank.py](run_textrank.py)
 
 ### Note on language support
 
@@ -145,6 +180,8 @@ Package ``kpe`` implements the following keyphrase extraction system:
 - Unsupervised
     - Statistical
         - [**TF-IDF**](kpe/tfidf.py)
+    - Graph
+        - [**TextRank**](kpe/textrank.py)
 
 The codes are reusable and the [base model](kpe/base_kpe.py) can easily be extended to add different keyphrase
 extraction method.
@@ -176,4 +213,17 @@ computed *less strict* than when using it. For example:
 
 Step 2: Keyphrase extraction
 
-An example of how to extract keyphrases using TF-IDF can be seen in [example_extract_kp.py](example_extract_kp.py).
+An example of how to extract keyphrases using TF-IDF can be seen in [example_tfidf.py](example_tfidf.py).
+
+### TextRank
+
+TextRank ([Mihalcea and Tarau, 2004](https://aclanthology.org/W04-3252/) is an unsupervised KPE method based on
+PageRank.
+
+Parameters:
+
+- ``pos``: part of speech tags to be selected as a vertex
+- ``window``: size of the co-occurrence window
+- ``top``: use only the top percentage of vertices for KPE
+
+An example of how to extract keyphrases using TF-IDF can be seen in [example_textrank.py](example_textrank.py).

@@ -2,3 +2,5 @@ pandas~=1.2.5
 tqdm~=4.49.0
 nltk~=3.6.2
 spacy~=2.3.2
+networkx~=2.6.3
+scipy~=1.6.2

@@ -16,6 +16,7 @@ Package ``kpe`` provides a basic solution for developing keyphrase extraction sy
 
 - [document_frequency.py](document_frequency.py): model to compute document frequency
 - [tfidf.py](tfidf.py): KPE model based on TF-IDF
+- [textrank.py](textrank.py): KPE model based on TextRank
 
 ### Challenge-specific modules
 
