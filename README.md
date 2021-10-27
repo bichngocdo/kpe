@@ -144,6 +144,7 @@ docker run -i kpe-textrank < patent_file.xml
 
 - Package [``kpe``](kpe): see [kpe/README.md](kpe/README.md) for the package information
 - [compute_document_frequency.py](compute_document_frequency.py)
+- [run_tfidf.py](run_tfidf.py)
 - [retrieve_keyphrases.py](retrieve_keyphrases.py)
 - [cli.py](cli.py)
 - [run_textrank.py](run_textrank.py)
@@ -175,7 +176,7 @@ with option ``--languages``, for example ``--languages de fr``.
 
 ## Implementation
 
-Package ``kpe`` implements the following keyphrase extraction system:
+Package ``kpe`` implements the following keyphrase extraction systems:
 
 - Unsupervised
     - Statistical
@@ -184,7 +185,7 @@ Package ``kpe`` implements the following keyphrase extraction system:
         - [**TextRank**](kpe/textrank.py)
 
 The codes are reusable and the [base model](kpe/base_kpe.py) can easily be extended to add different keyphrase
-extraction method.
+extraction methods.
 
 ## Usage
 
@@ -217,7 +218,7 @@ An example of how to extract keyphrases using TF-IDF can be seen in [example_tfi
 
 ### TextRank
 
-TextRank ([Mihalcea and Tarau, 2004](https://aclanthology.org/W04-3252/) is an unsupervised KPE method based on
+TextRank ([Mihalcea and Tarau, 2004](https://aclanthology.org/W04-3252/)) is an unsupervised KPE method based on
 PageRank.
 
 Parameters:
