@@ -21,6 +21,7 @@ def extract_kp_xml_folder(
         output_file: str,
         n: int = 4,
         k: int = 30,
+        stopwords: bool = False,
         allowed_languages: List[str] = None,
         redundancy_removal: bool = False,
 ):
@@ -52,7 +53,9 @@ def extract_kp_xml_folder(
                 num_docs, doc_freq = DocumentFrequency.read_tsv(df_file)
                 tfidf_models[lang] = TfIdf(
                     document_frequency=doc_freq, num_documents=num_docs,
-                    language=lang, n=n
+                    language=lang, n=n,
+                    spacy_model=None, stemmer=None,
+                    stopwords=stopwords, normalization='stemming'
                 )
                 tqdm.write('Load KPE model for language: {}'.format(lang))
             all_text = []
@@ -117,6 +120,8 @@ if __name__ == '__main__':
                         help='maximum size (n-gram) of extracted keyphrases')
     parser.add_argument('-k', '--top', type=int, default=30,
                         help='maximum number of keyphrases to extract')
+    parser.add_argument('--stopwords', action='store_true',
+                        help='use stopwords to filter candidates')
     parser.add_argument('--languages', type=str, required=False, nargs='+',
                         help='only extract keyphrases on documents in these languages')
     parser.add_argument('--redundancy_removal', type=bool, default=False,
@@ -131,6 +136,7 @@ if __name__ == '__main__':
         output_file=args.output,
         n=args.size,
         k=args.top,
+        stopwords=args.stopwords,
         allowed_languages=args.languages,
         redundancy_removal=args.redundancy_removal,
     )

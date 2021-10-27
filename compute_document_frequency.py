@@ -14,6 +14,7 @@ def compute_df_xml_folder(
         input_dir: str,
         output_dir: str,
         n: int = 5,
+        stopwords: bool = False,
         allowed_languages: List[str] = None,
 ):
     df_models = {}
@@ -35,7 +36,7 @@ def compute_df_xml_folder(
                     try:
                         df_models[lang] = DocumentFrequency(language=lang, n=n,
                                                             spacy_model=None, stemmer=None,
-                                                            stopwords=False, normalization='stemming')
+                                                            stopwords=stopwords, normalization='stemming')
                     except FileNotFoundError:
                         pass
                 model = df_models.get(lang, None)
@@ -65,6 +66,8 @@ if __name__ == '__main__':
                         help='output folder for document frequency files (.tsv)')
     parser.add_argument('-n', '--size', type=int, default=5,
                         help='maximum size (n-gram) of extracted keyphrases')
+    parser.add_argument('--stopwords', action='store_true',
+                        help='use stopwords to filter candidates')
     parser.add_argument('--languages', type=str, required=False, nargs='+',
                         help='only compute document frequency on documents in these languages')
 
@@ -75,5 +78,6 @@ if __name__ == '__main__':
         input_dir=args.input,
         output_dir=args.output,
         n=args.size,
+        stopwords=args.stopwords,
         allowed_languages=args.languages,
     )
