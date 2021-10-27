@@ -78,12 +78,38 @@ keyphrases('AU6027B1.xml')
 
 to see the extracted keyphrases of a particular document.
 
+### Docker
+
+Requirements: Docker is installed and the Docker server is running.
+
+Step 1: Build the Docker image
+
+```shell
+docker build --tag kpe .
+```
+
+Step 2: Mount the local folder containing ``.xml`` documents to ``/data`` in the docker container and start the docker
+image
+
+```shell
+docker run -v /absolute/path/data/in/your/machine:/data -it kpe
+```
+
+Step 3: Keyphrase extraction The prompt will ask for the name of the file you want to extract from:
+
+```shell
+Input file:
+```
+
+Type a name (e.g. ``AT508B.xml``), press Enter. The program will display a list of ranked keyphrases.
+
 ### Delivery
 
 - Package [``kpe``](kpe): see [kpe/README.md](kpe/README.md) for the package information
 - [compute_document_frequency.py](compute_document_frequency.py)
 - [extract_keyphrases.py](extract_keyphrases.py)
 - [retrieve_keyphrases.py](retrieve_keyphrases.py)
+- [cli.py](cli.py)
 
 ### Note on language support
 
